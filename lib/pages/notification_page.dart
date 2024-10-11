@@ -1,0 +1,1 @@
+// the user will just choose the date and the note he want to recive it in the selected date.
