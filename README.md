@@ -1,17 +1,15 @@
-# toolsapp
+# App Overview
 
-A new Flutter project.
+This application contains three primary sections:
 
-## Getting Started
+## Home Page
+- The main page provides two buttons:
+  - **Notification**: Navigate to the notification setup page.
+  - **Timer**: Navigate to the timer page.
 
-This project is a starting point for a Flutter application.
+## Notification Page
+- Allows the user to choose a date and enter a note. The app will send a notification with the note on the selected date.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# automatic-journey
+## Timer Page
+- Starts a 20-minute timer when the user presses "Start."
+- After 20 minutes, the app sends a notification to take a 5-minute break.
