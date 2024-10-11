@@ -45,5 +45,14 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<key>UIBackgroundModes</key>
+	<array>
+	    <string>fetch</string>
+	    <string>processing</string>
+	</array>
+	<key>NSLocalNotificationUsageDescription</key>
+	<string>We need to show you notifications for the Pomodoro timer.</string>
+
 </dict>
 </plist>
