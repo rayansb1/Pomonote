@@ -13,5 +13,3 @@ This application contains three primary sections:
 ## Timer Page ⏱️
 - Starts a 20-minute timer when the user presses "Start."
 - After 20 minutes, the app sends a notification to take a 5-minute break. 🛑☕
-# ToolsApp
-# ToolsApp
