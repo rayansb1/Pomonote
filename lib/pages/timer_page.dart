@@ -12,8 +12,8 @@ class TimerPage extends StatefulWidget {
 
 class TimerPageState extends State<TimerPage> {
   Timer? _timer;
-  int _workTime = 5; //25 * 60;
-  int _breakTime = 5; //5 * 60;
+  int _workTime = 25 * 60;
+  int _breakTime = 5 * 60;
   bool _isWork = true;
   bool _isRunning = false;
   String _buttonText = "Start Timer";
@@ -122,11 +122,12 @@ class TimerPageState extends State<TimerPage> {
             _isWork = false;
             _isRunning = true;
             _buttonText = "Pause Break";
-            _breakTime = 5; //5 * 60;
+            _breakTime = 5 * 60;
             _startBreakTimer(); // Automatically start break timer
           } else {
             _cyclesCompleted++;
-            _showGreatWorkDialog(); // Show the completion dialog
+            _showGreatWorkDialog();
+            _showNotification("Great Work", "You Have Finished the Session");
           }
         }
       });
@@ -149,7 +150,7 @@ class TimerPageState extends State<TimerPage> {
             _isWork = true;
             _isRunning = true;
             _buttonText = "Pause Work";
-            _workTime = 5; //25 * 60; // Reset work time to 25 minutes
+            _workTime = 25 * 60; // Reset work time to 25 minutes
             _startWorkTimer();
           }
         }
@@ -164,24 +165,51 @@ class TimerPageState extends State<TimerPage> {
         title: const Text('Great Work!'),
         content: const Text('You have completed 4 Pomodoro cycles.'),
         actions: [
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _resetTimer();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.green,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-                textStyle: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          Row(
+            mainAxisAlignment:
+                MainAxisAlignment.spaceEvenly, // Controls spacing
+            children: [
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    _resetTimer();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 20),
+                    textStyle: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  child: const Text('Start Again'),
                 ),
               ),
-              child: const Text('Start Again'),
-            ),
+              Expanded(
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _startOrPauseTimer();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 20),
+                      textStyle: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    child: const Text('Exit'),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -190,8 +218,8 @@ class TimerPageState extends State<TimerPage> {
 
   void _resetTimer() {
     setState(() {
-      _workTime = 5; //25 * 60;
-      _breakTime = 5; //5 * 60;
+      _workTime = 2; //25 * 60;
+      _breakTime = 2; //5 * 60;
       _cyclesCompleted = 0;
       _buttonText = "Start Timer";
       _isRunning = false;
