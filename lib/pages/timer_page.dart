@@ -12,13 +12,12 @@ class TimerPage extends StatefulWidget {
 
 class TimerPageState extends State<TimerPage> {
   Timer? _timer;
-  int _workTime = 25 * 60; // 25 minutes for work
-  int _breakTime = 5 * 60; // 5 minutes for break
+  int _workTime = 5; //25 * 60;
+  int _breakTime = 5; //5 * 60;
   bool _isWork = true;
   bool _isRunning = false;
   String _buttonText = "Start Timer";
-  int _cyclesCompleted =
-      0; // Tracks how many work/break cycles have been completed
+  int _cyclesCompleted = 0;
 
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -119,16 +118,14 @@ class TimerPageState extends State<TimerPage> {
         } else {
           _timer?.cancel();
           if (_cyclesCompleted < 3) {
-            // If less than 4 cycles are completed, continue with the break cycle
             _showNotification("Work Finished", "Time for a 5-minute break!");
             _isWork = false;
-            _isRunning = true; // Automatically continue to break timer
-            _buttonText = "Pause Break"; // Update button text to pause break
-            _breakTime = 5 * 60; // Reset break time to 5 minutes
+            _isRunning = true;
+            _buttonText = "Pause Break";
+            _breakTime = 5; //5 * 60;
             _startBreakTimer(); // Automatically start break timer
           } else {
-            // After 4 cycles, show "Great Work" message and don't start a break
-            _cyclesCompleted++; // Increment the cycle count
+            _cyclesCompleted++;
             _showGreatWorkDialog(); // Show the completion dialog
           }
         }
@@ -143,19 +140,17 @@ class TimerPageState extends State<TimerPage> {
           _breakTime--;
         } else {
           _timer?.cancel();
-          _cyclesCompleted++; // Increment the cycle count
+          _cyclesCompleted++;
           if (_cyclesCompleted >= 4) {
-            // If 4 cycles are completed, show the "Great work" message
             _showGreatWorkDialog();
           } else {
-            // Otherwise, start the next Pomodoro session
             _showNotification(
                 "Break Finished", "Starting next Pomodoro session.");
-            _isWork = true; // Reset for the next Pomodoro session
-            _isRunning = true; // Keep the timer running
-            _buttonText = "Pause Work"; // Update button text to pause work
-            _workTime = 25 * 60; // Reset work time to 25 minutes
-            _startWorkTimer(); // Automatically restart work timer
+            _isWork = true;
+            _isRunning = true;
+            _buttonText = "Pause Work";
+            _workTime = 5; //25 * 60; // Reset work time to 25 minutes
+            _startWorkTimer();
           }
         }
       });
@@ -173,11 +168,11 @@ class TimerPageState extends State<TimerPage> {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                _resetTimer(); // Reset the timer for another 4 cycles
+                _resetTimer();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white, // White background
-                foregroundColor: Colors.green, // Green text
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.green,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
                 textStyle: const TextStyle(
@@ -195,9 +190,9 @@ class TimerPageState extends State<TimerPage> {
 
   void _resetTimer() {
     setState(() {
-      _workTime = 25 * 60;
-      _breakTime = 5 * 60;
-      _cyclesCompleted = 0; // Reset the cycle counter
+      _workTime = 5; //25 * 60;
+      _breakTime = 5; //5 * 60;
+      _cyclesCompleted = 0;
       _buttonText = "Start Timer";
       _isRunning = false;
       _isWork = true;
@@ -237,24 +232,21 @@ class TimerPageState extends State<TimerPage> {
         title: const Text(
           "Pomodoro Timer",
           style: TextStyle(
-            color:
-                Color.fromARGB(255, 0, 0, 0), // Match the green color for text
-            fontSize: 24, // Match the font size
-            fontWeight: FontWeight.bold, // Bold font to match the button text
+            color: Color.fromARGB(255, 0, 0, 0),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: const Color.fromARGB(
-            255, 232, 232, 232), // Matching the page background color
-        elevation: 0, // Remove shadow for a flat appearance
-        foregroundColor: Colors.black, // Set icon color to black
+        backgroundColor: const Color.fromARGB(255, 232, 232, 232),
+        elevation: 0,
+        foregroundColor: Colors.black,
       ),
-      backgroundColor: const Color.fromARGB(
-          255, 232, 232, 232), // Matching background color for page
+      backgroundColor: const Color.fromARGB(255, 232, 232, 232),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 50), // Add some space below the AppBar
+            const SizedBox(height: 50),
             Text(
               _isWork ? "Work Timer ⏰" : "Break Timer ⏳",
               style: const TextStyle(
