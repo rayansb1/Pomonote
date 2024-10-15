@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:toolsapp/pages/notification_page.dart';
-import 'package:toolsapp/pages/timer_page.dart';
+import 'package:pomonote/pages/notification_page.dart';
+import 'package:pomonote/pages/timer_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -23,7 +23,31 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 232, 232, 232),
-      body: Center(
+      body: SafeArea(
+        // Use SafeArea to avoid the device's status bar overlap
+        child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.start, // Align children at the top
+          crossAxisAlignment:
+              CrossAxisAlignment.start, // Align to the start (left)
+          children: [
+            const SizedBox(height: 20), // Add some space at the top
+            Row(
+              children: [
+                Container(
+                  child: const Text(
+                      "Welcome"), // Add "const" for Text since it is constant
+                  padding: const EdgeInsets.all(
+                      8.0), // Optional: Add padding inside the container
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+
+      /*
+      Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -78,6 +102,7 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+      */
     );
   }
 }
