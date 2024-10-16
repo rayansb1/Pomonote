@@ -12,8 +12,11 @@ class NotificationPage extends StatefulWidget {
 }
 
 class _NotificationPageState extends State<NotificationPage> {
-  DateTime? selectedDate;
-  final _noteController = TextEditingController();
+  DateTime selectedDate = DateTime.now(); // Variable to store the selected date
+  TimeOfDay selectedTime =
+      TimeOfDay.now(); // Variable to store the selected time
+  final _noteController =
+      TextEditingController(); // Controller for the note input
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   int _notificationIdCounter = 0; // Counter for unique notification IDs
@@ -21,17 +24,16 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   void initState() {
     super.initState();
-    _initializeNotifications();
-    tz.initializeTimeZones(); // Initialize time zones
+    _initializeNotifications(); // Initialize notifications when the app starts
+    tz.initializeTimeZones(); // Initialize time zones for scheduling notifications
   }
 
+  // Method to initialize notifications
   Future<void> _initializeNotifications() async {
-    // Request permissions for notifications
-    await _requestPermissions();
+    await _requestPermissions(); // Request notification permissions
 
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
-
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings();
 
@@ -42,20 +44,22 @@ class _NotificationPageState extends State<NotificationPage> {
     );
 
     await flutterLocalNotificationsPlugin.initialize(
-      initializationSettings,
-    );
+        initializationSettings); // Initialize the notification plugin
   }
 
+  // Request permission to send notifications
   Future<void> _requestPermissions() async {
-    await Permission.notification.request();
+    await Permission.notification.request(); // Request notification permission
   }
 
+  // Method to select a date from a date picker
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+      initialDate: DateTime.now(), // Default to current date
+      firstDate: DateTime.now(), // Can't select a date before today
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+
       builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
@@ -74,6 +78,7 @@ class _NotificationPageState extends State<NotificationPage> {
       },
     );
 
+    // If a date was picked, update the selectedDate variable
     if (picked != null) {
       setState(() {
         selectedDate = picked;
@@ -81,63 +86,86 @@ class _NotificationPageState extends State<NotificationPage> {
     }
   }
 
-  Future<void> _scheduleNotification() async {
-    if (selectedDate == null || _noteController.text.isEmpty) {
-      // If date or note is not provided, show an error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a date and enter a note')),
-      );
-      return;
-    }
-
-    // Convert selected date to a TZDateTime for scheduling
-    final tzDateTime = tz.TZDateTime.from(
-      selectedDate!,
-      tz.local,
+  Future<void> _selectTime(BuildContext context) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
     );
 
-    // Schedule the notification with a unique ID
+    if (picked != null) {
+      setState(() {
+        selectedTime = picked;
+      });
+    }
+  }
+
+  // Method to schedule a notification
+  Future<void> _scheduleNotification() async {
+    // Check if the note is empty or if no date is selected
+    if (_noteController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a note and select a date')),
+      );
+      return; // Exit the method if the validation fails
+    }
+
+    // Use the selected date and set the time to now + 1 minute for testing
+    DateTime scheduledTime = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    );
+
+    // Convert selected date to a TZDateTime for scheduling
+    final tzDateTime = tz.TZDateTime.from(scheduledTime, tz.local);
+
+    print(
+        'Scheduling notification at: $tzDateTime with note: ${_noteController.text}');
+
+    // Schedule the notification
     await flutterLocalNotificationsPlugin.zonedSchedule(
       _notificationIdCounter++, // Increment the ID for each notification
-      'Reminder', // Title
+      'Reminder', // Title of the notification
       _noteController.text, // Note text
-      tzDateTime, // Schedule for the selected date
+      tzDateTime, // Time to schedule the notification
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'your_channel_id',
           'your_channel_name',
           channelDescription: 'your_channel_description',
-          importance: Importance.high,
-          priority: Priority.high,
+          importance: Importance.high, // High importance for immediate display
+          priority: Priority.high, // High priority for notification
         ),
-        iOS: DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(), // iOS notification settings
       ),
-      androidAllowWhileIdle: true,
+      androidAllowWhileIdle:
+          true, // Allow notification even if the device is idle
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.dateAndTime,
     );
 
-    // Show a confirmation message
+    // Show confirmation message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Notification Scheduled')),
     );
+
+    print('Notification scheduled successfully.'); // Log success
   }
 
   @override
   Widget build(BuildContext context) {
-    String dateText;
+    // Display the selected date or a default message
+    String dateText =
+        '${selectedDate.toLocal()}'.split(' ')[0]; // Format the date
 
-    if (selectedDate == null) {
-      dateText = 'No Date Chosen!';
-    } else {
-      dateText = '${selectedDate!.toLocal()}'.split(' ')[0];
-    }
-
-    final screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width; // Get screen width
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 232, 232, 232),
+      backgroundColor:
+          const Color.fromARGB(255, 232, 232, 232), // Background color
       appBar: AppBar(
         title: const Text(
           'Select a Date',
@@ -156,6 +184,7 @@ class _NotificationPageState extends State<NotificationPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // Display the selected date
               Text(
                 'Selected Date: $dateText',
                 style: const TextStyle(
@@ -164,30 +193,54 @@ class _NotificationPageState extends State<NotificationPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: screenWidth * 0.8,
-                height: 60,
-                child: ElevatedButton(
-                  onPressed: () => _selectDate(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  child: const Text(
-                    'Pick a Date',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+
+              const SizedBox(height: 30), // Space between elements
+
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _selectDate(context), // Open date picker
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      child: const Text(
+                        'Pick a Date',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _selectTime(context), // Open time picker
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      child: const Text(
+                        'Pick a Time',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 30),
+
+              const SizedBox(height: 30), // Space between elements
+
+              // Input field for the note
               SizedBox(
                 width: screenWidth * 0.8,
                 child: TextField(
-                  controller: _noteController,
+                  controller: _noteController, // Controller for the note input
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 18,
@@ -199,23 +252,27 @@ class _NotificationPageState extends State<NotificationPage> {
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(), // Border style
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.green,
+                        color: Colors.green, // Border color when enabled
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                        color: Colors.green,
+                        color: Colors.green, // Border color when focused
                       ),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+
+              const SizedBox(height: 30), // Space between elements
+
+              // Button to schedule the notification
               ElevatedButton(
-                onPressed: _scheduleNotification,
+                onPressed:
+                    _scheduleNotification, // Schedule notification on press
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                 ),
