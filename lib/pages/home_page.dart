@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:toolsapp/pages/notification_page.dart';
-import 'package:toolsapp/pages/timer_page.dart';
+import 'package:pomonote/pages/notification_page.dart';
+import 'package:pomonote/pages/timer_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
