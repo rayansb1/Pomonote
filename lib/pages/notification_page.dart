@@ -90,6 +90,22 @@ class _NotificationPageState extends State<NotificationPage> {
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.green,
+            colorScheme: const ColorScheme.light(
+              primary: Colors.green,
+              onPrimary: Colors.white,
+              onSurface: Colors.green,
+            ),
+            buttonTheme: const ButtonThemeData(
+              textTheme: ButtonTextTheme.primary,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null) {
